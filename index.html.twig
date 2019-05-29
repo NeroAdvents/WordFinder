@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+            integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+            crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+            integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"
+            type="text/javascript"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="index.js" type="text/javascript"></script>
+    <script src="node_modules/requirejs/require.js" data-main=""></script>
+    {% block head %}
+    {% endblock %}
+</head>
+<body>
+<div class="wrapper">
+    <div class="col">
+        <div class="row">
+            <div style="margin: auto; margin-top: 100px">
+                <div class="score" style="display: inline-block">
+                    <h1 style="margin-top: 20px; font-size: 1.5em ">SCORE: 0</h1>
+                </div>
+                <div class="timer" style="display: inline-block">
+                    <h1 style="margin-top: 20px; font-size: 1.5em">05:00</h1>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="letters">
+                <ul class="connected-sortable" style="margin-right: 20px">
+                </ul>
+            </div>
+        </div>
+        <div class="row">
+            <div class="droppable-area">
+                <div class="placeholder" style="font-family: letter; margin-top: 50px; font-size: 2em"><p>ADD YOUR ITEM HERE.</p></div>
+            </div>
+        </div>
+        <div class="row">
+            <div id="1" class="cardContainer" style="width: 20%; margin-left: 360px">
+                <div class="card">
+                    <div class="front"><h3 class="cardTitle">INDICE 1</h3></div>
+                    <div class="back">
+                        <div class="content">
+                            <h3 class="cardTitle"></h3>
+                            <br/>
+                            <!--<p id="happy"></p>-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="2" class="cardContainer" style="width: 20%">
+                <div class="card">
+                    <div class="front"><h3 class="cardTitle">INDICE 2</h3></div>
+                    <div class="back">
+                        <div class="content">
+                            <h3 class="cardTitle"></h3>
+                            <br/>
+                            <!--<p id="happy"></p>-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="3" class="cardContainer" style="width: 20%;">
+                <div class="card">
+                    <div class="front"><h3 class="cardTitle">INDICE 3</h3></div>
+                    <div class="back">
+                        <div class="content">
+                            <h3 class="cardTitle"></h3>
+                            <br/>
+                            <!--<p id="happy"></p>-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="welcome-section content-hidden">
+    <div class="content-wrap">
+        <h1 class="title">Wordfinder</h1>
+        <a href="" style="text-decoration: none"
+           class="enter-button"><span>S</span><span>t</span><span>a</span><span>r</span><span>t</span><span> </span><span>G</span><span>a</span><span>m</span><span>e</span></a>
+    </div>
+</div>
+<div id="newGame" style="
+  position: fixed;
+  display: none;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,1);
+  z-index: 2;
+  cursor: pointer;    color: #fff;
+    background: linear-gradient(-45deg, #EE7752, #E73C7E, #23A6D5, #23D5AB);
+    background-size: 400% 400%;
+    -webkit-animation: Gradient 15s ease infinite;
+    -moz-animation: Gradient 15s ease infinite;
+    animation: Gradient 15s ease infinite;">
+    <div class="content-wrap">
+        <h1 id="title" style="color: white;     font-family: 'title';
+    font-size:11em;
+
+    -webkit-animation: floating-text 2s ease alternate infinite;
+    -moz-animation: floating-text 2s ease alternate infinite;
+    -ms-animation: floating-text 2s ease alternate infinite;
+    -o-animation: floating-text 2s ease alternate infinite;
+    animation: floating-text 2s ease alternate infinite;"></h1>
+        <a href="" style="text-decoration: none"
+           class="enter-button"><span>N</span><span>e</span><span>w</span><span> </span><span>G</span><span>a</span><span>m</span><span>e</span></a>
+        </div>
+</div>
+{% block javascripts %}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        var words = `{{words}}`;
+        var index = 0;
+        var score = 0;
+
+        words = JSON.parse(words);
+
+        for (let i = 0; i < words.length; i++) {
+            console.log(words[i].word_name);
+        }
+
+        /**********************
+         * START GAME SCREEN  *
+         **********************/
+
+        let enterButton = $('.welcome-section').find('.enter-button');
+
+        setTimeout(function () {
+            $('.welcome-section').removeClass('content-hidden');
+        }, 800);
+
+        enterButton.on('click', function (e) {
+            e.preventDefault();
+            $('.welcome-section').addClass('content-hidden').fadeOut();
+            jQuery(function ($) {
+                document.getElementById("newGame").style.display = 'none';
+                drag();
+                var fiveMinutes = 60 * 5,
+                    display = $('.timer h1');
+                startTimer(fiveMinutes, display);
+                writeScore();
+            });
+        });
+
+        randomisedWord(words, index);
+
+        /**********************
+         * DRAG'N'DROP EVENTS *
+         **********************/
+        function drag() {
+            $(".draggable-item").draggable({
+                // code
+                cursor: 'move',
+                containment: '.container',
+                stack: '.connected-sortable ul',
+                revert: true,
+            });
+        }
+
+        $(".droppable-area").droppable({
+            // code
+            hoverClass: 'hovered',
+            accept: ":not(.ui-sortable-helper)",
+            drop: handleDropEvent
+        }).sortable({
+            items: "div:not(.placeholder)",
+            sort: function () {
+                $(this).removeClass("ui-state-default");
+            },
+            update: function () {
+                getCreatedWord(words, index);
+            }
+        });
+
+        function handleDropEvent(event, ui) {
+            var draggable = ui.draggable;
+
+            $(this).find(".placeholder").remove();
+            draggable.remove();
+            $("<div class='draggable-item test'></div>").text(draggable.text()).appendTo(this);
+            getCreatedWord(words, index);
+        }
+
+        /**********************
+         *        TIMER       *
+         **********************/
+
+        function startTimer(duration, display) {
+            var timer = duration, minutes, seconds;
+            var myTimer = setInterval(function () {
+                minutes = parseInt(timer / 60, 10);
+                seconds = parseInt(timer % 60, 10);
+
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                display.text(minutes + ":" + seconds);
+
+                if (--timer < 0) {
+                    clearInterval(myTimer);
+                    $(".card").removeClass('flipped');
+                    // $(".newGame").style.display = 'block';
+                    document.getElementById("newGame").style.display = 'block';
+                    $("#title").text("SCORE: " + score);
+                    // $('.welcome-section').append("<h1 class='title'>SCORE" + score + "</h1>");
+                    // $('.welcome-section').append("<h1 class='enter-button'><span>N</span><span>e</span><span>w</span><span> </span><span>G</span><span>a</span><span>m</span><span>e</span></h1>");
+                    score = 0;
+                }
+            }, 1000);
+        }
+
+        /**********************
+         *     FLIP INDICE    *
+         **********************/
+
+        $('.card').click(function () {
+            $(this).toggleClass('flipped');
+            if (score >= 15) {
+                score -= 15;
+            } else {
+                score = 0;
+            }
+            writeScore();
+        });
+
+        /**********************
+         *  GENERATION WORDS  *
+         **********************/
+
+        function delNewWord() {
+            $(".droppable-area .draggable-item").remove();
+            $(".card").removeClass('flipped');
+            $("#1 .content h3").text('');
+            $("#2 .content h3").text('');
+            $("#3 .content h3").text('');
+        }
+
+        function randomisedWord(words, index) {
+            let arr = [];
+            for (let j = 0; j < words[index].word_name.length; j++) {
+                arr.push(words[index].word_name[j].toUpperCase());
+            }
+            let word = "";
+            for (let k = 0; k <= arr.length; k++) {
+                let char = arr[Math.floor(Math.random() * arr.length)];
+                for (let l = 0; l < arr.length; l++) {
+                    if (char === arr[l]) {
+                        arr.splice(l, 1);
+                        break;
+                    }
+                }
+                word += char;
+                k = 0;
+            }
+            for (let m = 0; m < word.length; m++) {
+                $(".connected-sortable").append("<li class='draggable-item'>" + word[m] + "</li>");
+            }
+            //synonym
+            $("#1 .content h3").text(words[index].synonymous[0]);
+            $("#2 .content h3").text(words[index].synonymous[1]);
+            $("#3 .content h3").text(words[index].synonymous[2]);
+        }
+
+        function writeScore() {
+            $(".score h1").text("SCORE: " + score);
+        }
+
+        function setNewScore(word) {
+            score += 5 * word.word_name.length;
+            writeScore();
+        }
+
+        function getCreatedWord() {
+            let word = [];
+
+            $('.droppable-area .draggable-item').each(function () {
+                word = word + $(this).text();
+            });
+            console.log(word);
+            if (words[index].word_name.toUpperCase() === word) {
+                console.log("gg");
+                setNewScore(words[index]);
+                delNewWord();
+                index++;
+                randomisedWord(words, index);
+                drag();
+            }
+        }
+    });
+</script>
+{% endblock %}
+</body>
+</html>
